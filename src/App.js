@@ -1,9 +1,6 @@
 import './styles/App.css';
 import React, { useState, useEffect } from 'react';
-import Form from 'react-bootstrap/Form'
-import { FormGroup } from 'react-bootstrap';
-//import { router }
-//import useFetchCryptoSearch from './useFetchCryptoSearch';
+import Form from 'react-bootstrap/Form';
 
 function App() {
   const [coins, setCoins] = useState([]);
