@@ -1,58 +1,92 @@
 import './styles/App.css';
 import React, { useState, useEffect } from 'react';
+import Autosuggest from 'react-autosuggest';
 import Form from 'react-bootstrap/Form';
 
 function App() {
   const [coins, setCoins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const handleChange = event => {
-    setSearchTerm(event.target.value);
-  };
+  const [suggestions, setSuggestions] = useState([]);
+
+  // const handleChange = event => {
+  //   setSearchTerm(event.target.value);
+  // };
+
+  useEffect(() => {
+    const results = !searchTerm ? [] : coins.filter(coin => {
+      let current = coin.name;
+      return current.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+    });
+    setSearchResults(results);
+  }, [searchTerm])
 
   useEffect(() => {
     fetch(`https://api.coingecko.com/api/v3/coins/list`)
       .then(response => response.json())
       .then((json) => {
-        let coinNames = [];
-        json.map(item => coinNames.push(item.name))
-        setCoins(coinNames);
+        let coins = [];
+        let suggestions = [];
+        json.map(item => { 
+        coins.push({'name': item.name, 'symbol': item.symbol})
+        suggestions.push(item.name)
+      });
+        setCoins(coins);
+        setSuggestions(suggestions);
       })
-    const results = !searchTerm ? [] : coins.filter(coin =>
-        coin.toLowerCase().includes(searchTerm.toLocaleLowerCase())
-      );
-    setSearchResults(results);
-        //setCoins(json))
-  }, [searchTerm]);
+  }, []);
 
   return (
     <div className="App">
       Yello World
 
-      <input
+      {/* <input
         type="text"
         placeholder="Search..."
         value={searchTerm}
         onChange={handleChange}
       />
-      <ul>
+      {/* <div>
         {searchResults.map(item => (
-          <li key={item}>{item}</li>
+          <div key={item.name}>{item.name}{' '}{item.symbol}</div>
         ))}
-      </ul>
+      </div> */}
+      <div>
+        <label htmlFor="Coin Name">Search Coin Name</label>
+        <Autosuggest
+          inputProps={{
+            placeholder: "Search For A Coin",
+            autoComplete: "abcd",
+            name: "coin-search",
+            id: "coin-search",
+            value: searchTerm,
+            onChange: (_event, {newValue}) => {
+              setSearchTerm(newValue)
+            }
+          }}
+          suggestions={suggestions}
+          onSuggestionsFetchRequested={({value}) => {
+            if(!value) {
+              setSuggestions([]);
+              return;
+            }
+            const results = !searchTerm ? [] : coins.filter(coin => {
+              let current = coin.name;
+              return current.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+            });
+            setSuggestions(results);
+          }}
+          multiSection={true}
+          onSuggestionsClearRequested={() => setSuggestions([])}
+          getSuggestionValue={(suggestion) => suggestion.name}
+          renderSuggestion={suggestion => <span>{suggestion.name}</span>}
+          renderSectionTitle={section => <strong>{section.symbol}</strong>}
+          getSectionSuggestions={(section) => [section]}
+        />
+      </div>
 
-      {/* <Form>
-        <FormGroup>
-          <Form.Label>Search For Coins Here</Form.Label>
-          <Form.Control type="search" placeholder="Search..." />
-          <Form.Text className="text-muted">
-            Lots of coins to search, have at it!
-          </Form.Text>
-        </FormGroup>
-      </Form> */}
-      {/* {coins.map(coin => {
-        return <pre>{coin}</pre>
-      // })} */}
+      
+      
     </div>
   );
 }
