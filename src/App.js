@@ -6,20 +6,16 @@ import Form from 'react-bootstrap/Form';
 function App() {
   const [coins, setCoins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  //const [searchResults, setSearchResults] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
 
-  // const handleChange = event => {
-  //   setSearchTerm(event.target.value);
-  // };
-
-  useEffect(() => {
-    const results = !searchTerm ? [] : coins.filter(coin => {
-      let current = coin.name;
-      return current.toLowerCase().includes(searchTerm.toLocaleLowerCase())
-    });
-    setSearchResults(results);
-  }, [searchTerm])
+  // useEffect(() => {
+  //   const results = !searchTerm ? [] : coins.filter(coin => {
+  //     let current = coin.name;
+  //     return current.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+  //   });
+  //   setSearchResults(results);
+  // }, [searchTerm])
 
   useEffect(() => {
     fetch(`https://api.coingecko.com/api/v3/coins/list`)
@@ -39,18 +35,6 @@ function App() {
   return (
     <div className="App">
       Yello World
-
-      {/* <input
-        type="text"
-        placeholder="Search..."
-        value={searchTerm}
-        onChange={handleChange}
-      />
-      {/* <div>
-        {searchResults.map(item => (
-          <div key={item.name}>{item.name}{' '}{item.symbol}</div>
-        ))}
-      </div> */}
       <div>
         <label htmlFor="Coin Name">Search Coin Name</label>
         <Autosuggest
@@ -70,9 +54,13 @@ function App() {
               setSuggestions([]);
               return;
             }
-            const results = !searchTerm ? [] : coins.filter(coin => {
+            // const results = !searchTerm ? [] : coins.filter(coin => {
+            //   let current = coin.name;
+            //   return current.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+            // });
+            const results = coins.filter(coin => {
               let current = coin.name;
-              return current.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+              return current.toLowerCase().includes(value.toLocaleLowerCase())
             });
             setSuggestions(results);
           }}
@@ -80,8 +68,8 @@ function App() {
           onSuggestionsClearRequested={() => setSuggestions([])}
           getSuggestionValue={(suggestion) => suggestion.name}
           renderSuggestion={suggestion => <span>{suggestion.name}</span>}
-          renderSectionTitle={section => <strong>{section.symbol}</strong>}
-          getSectionSuggestions={(section) => [section]}
+          renderSectionTitle={section => <strong>{'Symbol:'} {section.symbol}</strong>} //this needs an array to be fed to it from getSectionSuggestions
+          getSectionSuggestions={(section) => [section]} //need to put result of func into array so when rendering it can map through array
         />
       </div>
 
@@ -92,3 +80,20 @@ function App() {
 }
 
 export default App;
+
+
+// const handleChange = event => {
+  //   setSearchTerm(event.target.value);
+  // };
+
+{/* <input
+        type="text"
+        placeholder="Search..."
+        value={searchTerm}
+        onChange={handleChange}
+      />
+      {/* <div>
+        {searchResults.map(item => (
+          <div key={item.name}>{item.name}{' '}{item.symbol}</div>
+        ))}
+      </div> */}
