@@ -7,7 +7,7 @@ import Graph from './components/Graph';
 const App = () => {
   const [coins, setCoins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState(null);
+  const [searchResults, setSearchResults] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
@@ -80,12 +80,17 @@ const App = () => {
           }}
         />
         </div>
-        {searchResults && <div className="graph-container">
+        <div>
+          {searchResults.map(result => {
+            return <Graph key={result.name} coinData={result}/>
+          })}
+        </div>
+        {/* {searchResults && <div className="graph-container">
           <Graph information={searchResults[0]} />
           {/* {searchResults.map((current) => {
             return <div key={current.name}>{current.name} Current Price: {current.currentPrice} All Time High: {current.allTimeHigh} All Time High Price: {current.highDate}</div>
-          })} */}
-        </div>}
+          })} 
+        </div>} */}
       </div>
 
       
