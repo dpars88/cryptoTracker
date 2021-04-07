@@ -1,12 +1,13 @@
 import './styles/App.css';
 import React, { useState, useEffect } from 'react';
 import Autosuggest from 'react-autosuggest';
-import Form from 'react-bootstrap/Form';
+import Graph from './components/Graph';
 
-function App() {
+
+const App = () => {
   const [coins, setCoins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
 
   useEffect(() => {
@@ -59,8 +60,8 @@ function App() {
           renderSuggestion={suggestion => <span>{suggestion.name}</span>}
           renderSectionTitle={section => <strong>{'Symbol:'} {section.symbol}</strong>} //this needs an array to be fed to it from getSectionSuggestions
           getSectionSuggestions={(section) => [section]} //need to put result of func into array so when rendering it can map through array
-          onSuggestionSelected={async (event, {suggestion}) => {
-            const result = await fetch(`https://api.coingecko.com/api/v3/coins/${suggestion.id}`)
+          onSuggestionSelected={(event, {suggestion}) => {
+            fetch(`https://api.coingecko.com/api/v3/coins/${suggestion.id}`)
             .then(response => response.json())
             .then((json) => {
               setSearchResults([{
@@ -74,17 +75,17 @@ function App() {
                 'pastDayHigh': json.market_data.high_24h,
                 'pastDayLow': json.market_data.low_24h
               }])
-              console.log(searchResults)
             })
             event.preventDefault();
           }}
         />
         </div>
-        <div className="graph-container">
-          {searchResults.map((current) => {
-            <div>{current.name} {current.currentPrice}</div>
-          })}
-        </div>
+        {searchResults && <div className="graph-container">
+          <Graph information={searchResults[0]} />
+          {/* {searchResults.map((current) => {
+            return <div key={current.name}>{current.name} Current Price: {current.currentPrice} All Time High: {current.allTimeHigh} All Time High Price: {current.highDate}</div>
+          })} */}
+        </div>}
       </div>
 
       
